@@ -29,5 +29,6 @@ public class TriADController {
     public String QueryResult(ModelMap modelMap){
         modelMap.get("");
         return "query";
+
     }
 }
