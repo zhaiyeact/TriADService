@@ -1,4 +1,4 @@
-<%--
+;<%--
   Created by IntelliJ IDEA.
   User: zhaiyeact
   Date: 2015/10/2
@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <html>
 <head>
     <title>TriAD Query</title>
@@ -24,24 +25,17 @@
     <div id="cluster">
         <h2 align="center">Cluster Status</h2>
     </div>
-    <div id="query" >
-        <table align="center" style="width:100%;">
-            <tr >
-                <td style="text-align:right;">
-                    Query:
-                </td>
-
-                <td style="width:80%;">
-      <textarea  type="text" style="width:100%;overflow-y:visible;height:200px;resize:none;" name="queryText" onclick="this.value=''">
-Edit your query here
-      </textarea>
-                </td>
-                <td style="text-align:left;">
-                    <input type="submit" name="querySubmit"/>
+    <form:form method="POST" commandName="query" action="/TriadService/query">
+        <table>
+            <tr>
+                <td><form:label path="request">Request</form:label></td>
+                <td><form:input path="request" /></td>
+                <td colspan="2">
+                    <input type="submit" value="Submit"/>
                 </td>
             </tr>
         </table>
-    </div>
+    </form:form>
     <div id="result">
     <textarea type="text" style="width:80%;overflow-y:visible;height:200px;resize:none;" name="queryResult" >
 
