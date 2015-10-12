@@ -27,6 +27,7 @@ public class TriADController {
 
     @RequestMapping(value="/query",method = RequestMethod.POST)
     public String QueryResult(ModelMap modelMap){
-        modelMap.get("")
+        modelMap.get("");
+        return "query";
     }
 }
