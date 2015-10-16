@@ -40,6 +40,12 @@ public class TriADController {
             modelMap.addAttribute("queryResult",query.getResponse());
         }
         return "query";
-
     }
+
+    @RequestMapping(value = "/home",method = RequestMethod.GET)
+    public ModelAndView HomePage(){
+        logger.debug("[CONTROLLER] home requested");
+        return new ModelAndView("home");
+    }
+
 }

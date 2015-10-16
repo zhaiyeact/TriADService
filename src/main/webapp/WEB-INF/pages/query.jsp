@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
     <title>TriAD Query</title>
@@ -16,10 +17,10 @@
     div#container{width: 100%;margin: 50px auto;text-align:center;}
     div#cluster{text-align: center;}
     div#result{text-align: center;}
-    div#query{background-color: cadetblue;text-align:center;margin: 0 auto;}
     div#foot{background-color: cadetblue;}
 </style>
 <body>
+
 <h1 align="center">TriAD Cluster</h1>
 <div id="container">
     <div id="cluster">
