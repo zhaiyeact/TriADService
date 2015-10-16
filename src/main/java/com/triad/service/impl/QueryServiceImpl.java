@@ -15,6 +15,7 @@ import java.net.Socket;
  */
 public class QueryServiceImpl implements QueryService {
 
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
