@@ -26,14 +26,15 @@ public class TriADController {
     @Resource
     QueryService queryService;
 
-    @RequestMapping(value = "/",method = RequestMethod.GET)
+    @RequestMapping(value = "/query",method = RequestMethod.GET)
     public ModelAndView QueryPage(){
 
         return new ModelAndView("query","query",new Query());
     }
 
-    @RequestMapping(value="/query",method = RequestMethod.POST)
+    @RequestMapping(value="/queryexecute",method = RequestMethod.POST)
     public String QueryResult(@ModelAttribute("query")Query query,ModelMap modelMap){
+        //logger.debug("[CONTROLLER] query: "+query.getRequest());
         ErrorCode errorCode = queryService.executeQuery(query);
         if(errorCode.getCode() == ErrorCode.SUCCESS.getCode()){
             //present query result when successfully execute the query
@@ -42,7 +43,7 @@ public class TriADController {
         return "query";
     }
 
-    @RequestMapping(value = "/home",method = RequestMethod.GET)
+    @RequestMapping(value = {"/home","cluster"},method = RequestMethod.GET)
     public ModelAndView HomePage(){
         logger.debug("[CONTROLLER] home requested");
         return new ModelAndView("home");

@@ -1,4 +1,4 @@
-;<%--
+<%--
   Created by IntelliJ IDEA.
   User: zhaiyeact
   Date: 2015/10/2
@@ -11,41 +11,79 @@
 <html>
 <head>
     <title>TriAD Query</title>
+    <link href="css/style.css" rel="stylesheet"/>
 </head>
-<style type="text/css">
-    body{text-align:center;}
-    div#container{width: 100%;margin: 50px auto;text-align:center;}
-    div#cluster{text-align: center;}
-    div#result{text-align: center;}
-    div#foot{background-color: cadetblue;}
-</style>
 <body>
+<div id="header">
+    <div class="shell">
+        <!-- Logo + Top Nav -->
+        <div id="top">
+            <h1><a href="#">TriAD</a></h1>
+        </div>
+        <!-- End Logo + Top Nav -->
 
-<h1 align="center">TriAD Cluster</h1>
-<div id="container">
-    <div id="cluster">
-        <h2 align="center">Cluster Status</h2>
-    </div>
-    <form:form method="POST" commandName="query" action="/TriadService/query">
-        <table>
-            <tr>
-                <td><form:label path="request">Request</form:label></td>
-                <td><form:input path="request" /></td>
-                <td colspan="2">
-                    <input type="submit" value="Submit"/>
-                </td>
-            </tr>
-        </table>
-    </form:form>
-    <div id="result">
-    <textarea type="text" style="width:80%;overflow-y:visible;height:200px;resize:none;" name="queryResult" >
-
-    </textarea>
-    </div>
-    <div id="foot">
-        Provided by Zhaiye 2015
+        <!-- Main Nav -->
+        <div id="navigation">
+            <ul>
+                <li><a href="/TriadService/cluster"><span>Cluster</span></a></li>
+                <li><a href="/TriadService/query" class="active"><span>Query Task</span></a></li>
+            </ul>
+        </div>
+        <!-- End Main Nav -->
     </div>
 </div>
+<div id="container">
+    <div class="shell">
+        <div id="main">
+            <div class="cl">&nbsp;</div>
+            <div id="content">
+                <div class="box">
+                    <div class="box-head">
+                        <h2 class="left">Query Execution</h2>
+                    </div>
+                    <form:form action="/TriadService/queryexecute" method="post" commandName="query">
+
+                        <!-- Form -->
+                        <div class="form">
+                            <p>
+                                <label>Master <span>(Required Field)</span></label>
+                                <input type="text" class="field size1" />
+                            </p>
+
+                            <p>
+                                <label>SPARQL Query <span>(Required Field)</span></label>
+                                <textarea class="field size1" rows="10" cols="30" name="request"></textarea>
+                            </p>
+
+                        </div>
+                        <!-- End Form -->
+
+                        <!-- Form Buttons -->
+                        <div class="buttons">
+                            <input type="submit" class="button" value="submit" />
+                        </div>
+                        <!-- End Form Buttons -->
+                    </form:form>
+                    <!-- Result div-->
+                    <div class="form">
+                        <p>
+                            <label>Result</label>
+                            <textarea class="field size1" rows="10" cols="30" name="queryResult" contenteditable="false"></textarea>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="cl">&nbsp;</div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<div id="footer">
+    <div class="shell">
+        <span class="left">&copy; provided by Zhaiye</span>
+    </div>
+</div>
+<!-- End Footer -->
 </body>
 </html>
 
