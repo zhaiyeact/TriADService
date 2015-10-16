@@ -44,7 +44,7 @@ h3 a{ text-decoration: none; }
 
 .shell { width:988px; margin:0 auto; }
 
-#header { height:89px; background:url(../images/header.gif); white-space:nowrap; }
+#header { height:15%; background:url(../images/header.gif); white-space:nowrap; }
 #header h1{ float:left; display:inline; padding-top:12px; }
 #top-navigation { float:right; white-space:nowrap; color:#fff; padding-top:15px; }
 #top-navigation a{ color:#fff; }
@@ -68,7 +68,7 @@ h3 a{ text-decoration: none; }
 #navigation ul li a.active { font-size:12px; font-weight: bold; color:#887e42; }
 
 
-#container { padding:20px 0;}
+#container { margin-top: 20px; min-height: 80%;height:auto;}
 
 .small-nav { color:#978b48; padding-bottom:20px; }
 .small-nav a{ color:#6f6636; }
@@ -86,7 +86,7 @@ h3 a{ text-decoration: none; }
 .table tr:hover td{ background:#fff9e1; }
 .table a.ico{ }
 
-.box { background:#fbfcfc; height:100%; padding:1px; margin-bottom:20px; }
+.box { background:#fbfcfc; height:auto; padding:1px; margin-bottom:20px; }
 .box-head { background:#ba4c32; height:32px; color:#fff; padding: 0 10px; line-height:32px; white-space:nowrap; border-bottom:solid 1px #fff; }
 .box-head .right{ padding-top:5px; line-height:13px;}
 .box-head .right label,
@@ -141,7 +141,7 @@ textarea.size1 { height:180px; }
 .add-button:hover { color:#333;}
 
 
-#footer { width:100%;height:44px; background:url(../images/footer.gif); line-height:44px; color:#fff;position: absolute;bottom: 0;}
+#footer { width:100%;height:5%; background:url(../images/footer.gif);line-height: 30px;  color:#fff;clear: both;text-align: center;}
 #footer a{ color:#fff; }
 
 

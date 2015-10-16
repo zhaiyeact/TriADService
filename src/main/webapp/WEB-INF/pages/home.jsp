@@ -8,8 +8,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html >
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <title>TriAD Service</title>
@@ -40,41 +39,9 @@
 <!-- Container -->
 <div id="container">
   <div class="shell">
-    <!-- Small Nav -->
-    <!--
-    <div class="small-nav">
-      <a href="#">Dashboard</a>
-      <span>&gt;</span>
-      Current Articles
-    </div>
-    -->
-    <!-- End Small Nav -->
-
-    <!-- Message OK -->
-    <!--
-    <div class="msg msg-ok">
-      <p><strong>Your file was uploaded succesifully!</strong></p>
-      <a href="#" class="close">close</a>
-    </div>
-    -->
-    <!-- End Message OK -->
-
-    <!-- Message Error -->
-    <!--
-    <div class="msg msg-error">
-      <p><strong>You must select a file to upload first!</strong></p>
-      <a href="#" class="close">close</a>
-    </div>
-    -->
-    <!-- End Message Error -->
-    <br />
-    <!-- Main -->
     <div id="main">
-      <div class="cl">&nbsp;</div>
-
       <!-- Content -->
       <div id="content">
-
         <!-- Box -->
         <div class="box">
           <!-- Box Head -->
@@ -133,12 +100,9 @@
         <!-- End Box -->
       </div>
       <!-- End Content -->
-
-
-
-      <div class="cl">&nbsp;</div>
     </div>
     <!-- Main -->
+    <div class="cl">&nbsp;</div>
   </div>
 </div>
 <!-- End Container -->
