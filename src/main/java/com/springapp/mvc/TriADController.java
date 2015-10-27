@@ -43,7 +43,7 @@ public class TriADController {
         return "query";
     }
 
-    @RequestMapping(value = {"/home","cluster"},method = RequestMethod.GET)
+    @RequestMapping(value = {"/","/cluster"},method = RequestMethod.GET)
     public ModelAndView HomePage(){
         logger.debug("[CONTROLLER] home requested");
         return new ModelAndView("home");
