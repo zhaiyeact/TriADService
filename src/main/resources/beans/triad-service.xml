@@ -6,5 +6,9 @@
        default-autowire="byName">
 
        <bean id="queryService" class="com.triad.service.impl.QueryServiceImpl"/>
+       <bean id="registerService" class="com.triad.service.impl.RegisterServiceImpl" scope="singleton" >
+              <property name="webHost" value="192.168.7.3"/>
+              <property name="webPort" value="1918"/>
+       </bean>
 
 </beans>

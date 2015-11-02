@@ -6,7 +6,9 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page import="com.triad.tools.ErrorCode" %>
+<%@ page session="true"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
@@ -52,7 +54,7 @@
 
                             <p>
                                 <label>SPARQL Query <span>(Required Field)</span></label>
-                                <textarea class="field size1" rows="10" cols="30" name="request"></textarea>
+                                <textarea class="field size1" rows="10" cols="30" name="request">${queryString}</textarea>
                             </p>
 
                         </div>
@@ -84,6 +86,17 @@
     </div>
 </div>
 <!-- End Footer -->
+<%
+    if(session.getAttribute("errorCode")!=null) {
+        if (session.getAttribute("errorCode").equals(ErrorCode.EMPTY_QUERY.getCode())) {
+            response.getWriter().write("<script> alert(\"Query can not be null!\")</script>");
+            session.removeAttribute("errorCode");
+        } else if (session.getAttribute("errorCode").equals(ErrorCode.SOCKET_ERROR.getCode())) {
+            response.getWriter().write("<script> alert(\"Can not connect to the Triad Master!\")</script>");
+            session.removeAttribute("errorCode");
+        }
+    }
+%>
 </body>
 </html>
 
