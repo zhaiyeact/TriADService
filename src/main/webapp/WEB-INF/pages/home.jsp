@@ -13,6 +13,35 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <title>TriAD Service</title>
   <link href="css/style.css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+    <script type="text/javascript">
+        $().ready(function(){
+            ${mRecordData}
+        });
+      function addRecordData(eleId, status, ip, hostName, port,role){
+          var tableObj = document.getElementById(eleId);
+          var row = tableObj.insertRow();
+          var cell = row.insertCell(0);
+          var length = tableObj.rows.length;
+
+          if(length%2 == 0){
+              row.className = "odd";
+          }
+
+          cell.innerHTML = "<h3><a href=\"#\" >"+ip+"</a></h3>";
+
+          cell = row.insertCell(1);
+          cell.innerHTML = "<a href=\"#\">"+hostName+"</a>";
+
+          cell = row.insertCell(2);
+          cell.innerHTML = status;
+
+          cell = row.insertCell(3);
+          cell.innerHTML = role;
+
+
+      }
+    </script>
 </head>
 <body>
 <!-- Header -->
@@ -50,31 +79,19 @@
             <div class="right">
               <label>search machines</label>
               <input type="text" class="field small-field" />
-              <input type="submit" class="button" value="search" />
+              <input type="submit" class="button" value="search"/>
             </div>
           </div>
           <!-- End Box Head -->
 
           <!-- Table -->
           <div class="table">
-            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" id="clusterTable">
               <tr>
                 <th>Ip</th>
                 <th>HostName</th>
                 <th>Status</th>
                 <th>Identity</th>
-              </tr>
-              <tr>
-                <td><h3><a href="#">192.168.7.1</a></h3></td>
-                <td><a href="#">test01</a></td>
-                <td>Running</td>
-                <td>Master</td>
-              </tr>
-              <tr class="odd">
-                <td><h3><a href="#">192.168.7.3</a></h3></td>
-                <td><a href="#">test03</a></td>
-                <td>Running</td>
-                <td>Slave</td>
               </tr>
             </table>
 

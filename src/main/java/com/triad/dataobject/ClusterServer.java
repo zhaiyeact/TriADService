@@ -16,6 +16,8 @@ public class ClusterServer implements Serializable {
 
     private String addr;
 
+    private String name;
+
     private Integer port;
 
     private RegState regState;
@@ -48,6 +50,14 @@ public class ClusterServer implements Serializable {
 
     public String getRole() {
         return role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setRole(String role) {

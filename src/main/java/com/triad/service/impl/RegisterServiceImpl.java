@@ -19,37 +19,31 @@ import java.util.concurrent.Executors;
 /**
  * Created by zhuoying on 2015/11/2.
  * The register message format shows as follows:
- * run/stop/initialize ${host} ${port} ${role}
+ * run/stop/initialize ${host} ${hostName} ${port} ${role}
  */
 public class RegisterServiceImpl implements RegisterService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static Logger logger = LoggerFactory.getLogger(RegisterServiceImpl.class);
 
     private String webHost;
 
     private Integer webPort;
 
-    private RegState regState;
-
     private List<ClusterServer> serverList;
+
+    private static volatile RegisterService instance;
 
 
     private Socket socket;
 
-    public RegState getRegState() {
-        return regState;
-    }
-
-    public void setRegState(RegState regState) {
-        this.regState = regState;
-    }
 
     public String getWebHost() {
         return webHost;
     }
 
     public void setWebHost(String webHost) {
-        webHost = webHost;
+        logger.info("[REGISTER_SERVICE] setWebHost invoked");
+        this.webHost = webHost;
     }
 
     public Integer getWebPort() {
@@ -57,33 +51,81 @@ public class RegisterServiceImpl implements RegisterService {
     }
 
     public void setWebPort(Integer webPort) {
-        webPort = webPort;
+        this.webPort = webPort;
+    }
+
+    public List<ClusterServer> getServerList() {
+        return serverList;
     }
 
 
+    private RegisterServiceImpl(){}
+
+    public static RegisterService getInstance(){
+        if(instance == null){
+            synchronized (RegisterServiceImpl.class){
+                if(instance == null){
+                    try{
+                        instance =  new RegisterServiceImpl();
+                    }
+                    catch (Exception e){
+                        logger.error("[REGISTER_SERVICE] initiation error");
+                    }
+                }
+            }
+        }
+        return instance;
+    }
+
+    public void init(){
+        start();
+    }
 
     @Override
     public RegState start() {
-        if(getRegState().getCode() == RegState.RUN.getCode()){
-            //return if the register is running or initializing
-            return getRegState();
-        }
-        try {
-            setRegState(RegState.RUN);
-            serverList = new ArrayList<ClusterServer>();
-            ExecutorService executor = Executors.newFixedThreadPool(20);
-
-            while(true){
-                if(getRegState().getCode() == RegState.STOP.getCode()){
-                    break;
-                }
-                socket = new ServerSocket(getWebPort()).accept();
-                executor.execute(new WorkerThread(socket));
+        synchronized (RegisterServiceImpl.class) {
+            if (instance != null) {
+                //return if the register is running or initializing
+                return RegState.RUN;
             }
         }
-        catch(IOException e){
-            logger.error("[REGISTER_SERVICE] IOException ",e);
-        }
+        getInstance();
+        serverList = new ArrayList<ClusterServer>();
+        Runnable serverThread = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ExecutorService executor = Executors.newFixedThreadPool(20);
+                    logger.info("[REGISTER_SERVICE] start register server!");
+                    while (true)
+                    {
+                        if(instance==null) {
+                            synchronized (RegisterServiceImpl.class) {
+                                if (instance == null) {
+                                    break;
+                                }
+                            }
+                        }
+                        socket = new ServerSocket(webPort).accept();
+                        executor.execute(new WorkerThread(socket));
+                    }
+
+                }
+                catch (IOException e){
+                    logger.error("[REGISTER_SERVICE] IOException ",e);
+                }
+                finally {
+                    try {
+                        socket.close();
+                    }
+                    catch (IOException e){
+
+                    }
+                }
+            }
+        };
+        new Thread(serverThread).start();
+        logger.info("[REGISTER_SERVICE] FINISHED INITIATION");
         return RegState.STOP;
     }
 
@@ -93,10 +135,11 @@ public class RegisterServiceImpl implements RegisterService {
     }
 
     @Override
-    public RegState register(String host, Integer port,RegState regState,String role) {
+    public RegState register(String host, String hostName,Integer port,RegState regState,String role) {
         ClusterServer server = new ClusterServer();
         server.setPort(port);
         server.setAddr(host);
+        server.setName(hostName);
         server.setRegState(regState);
         Boolean contains = false;
         for(ClusterServer clusterServer:serverList){
@@ -124,10 +167,10 @@ public class RegisterServiceImpl implements RegisterService {
     }
 
     protected String matchRole(String role) throws Exception{
-        if(role.toLowerCase().equals("master")){
+        if(role.toLowerCase().equals(ClusterServer.MASTER.toLowerCase())){
             return ClusterServer.MASTER;
         }
-        else if(role.toLowerCase().equals("slave")){
+        else if(role.toLowerCase().equals(ClusterServer.SLAVE.toLowerCase())){
             return ClusterServer.SLAVE;
         }
         else{
@@ -146,6 +189,7 @@ public class RegisterServiceImpl implements RegisterService {
         @Override
         public void run() {
             try {
+                logger.info("[REGISTER_SERVICE] socket connection established");
                 Reader reader = new InputStreamReader(client.getInputStream());
                 char result[] = new char[1024];
                 StringBuilder sb = new StringBuilder();
@@ -155,7 +199,9 @@ public class RegisterServiceImpl implements RegisterService {
                 }
                 String msg = sb.toString();
                 if(msg.equals("stop")){
-                    setRegState(RegState.STOP);
+                    synchronized (RegisterServiceImpl.class){
+                        instance = null;
+                    }
                     return;
                 }
                 String[] lines = msg.split("\n");
@@ -163,9 +209,10 @@ public class RegisterServiceImpl implements RegisterService {
                     String[] opts = line.split(" ");
                     String operation = opts[0];
                     String address = opts[1];
-                    String port = opts[2];
-                    String role = opts[3];
-                    register(address,Integer.parseInt(port),matchState(operation),matchRole(role));
+                    String name = opts[2];
+                    String port = opts[3];
+                    String role = opts[4];
+                    register(address,name,Integer.parseInt(port),matchState(operation),matchRole(role));
                 }
             }
             catch (IOException e){
