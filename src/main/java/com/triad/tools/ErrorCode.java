@@ -6,7 +6,8 @@ package com.triad.tools;
 public enum ErrorCode {
     SUCCESS(0,"SUCCESS"),
     SOCKET_ERROR(1,"SOCKET ERROR"),
-    EMPTY_QUERY(2,"EMPTY QUERY FOUND")
+    EMPTY_QUERY(2,"EMPTY QUERY FOUND"),
+    SHUTTING_DOWN(3,"THE CLUSTER SELECTED IS SHUTTING DOWN")
     ;
 
 

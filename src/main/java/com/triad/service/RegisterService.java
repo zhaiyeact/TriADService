@@ -17,4 +17,6 @@ public interface RegisterService {
     RegState register(String host,String hostName,Integer port,RegState regState,String role);
 
     List<ClusterServer> getServerList();
+
+    List<ClusterServer> getMasterList();
 }

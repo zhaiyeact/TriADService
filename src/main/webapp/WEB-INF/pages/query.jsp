@@ -14,6 +14,17 @@
 <head>
     <title>TriAD Query</title>
     <link href="css/style.css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+    <script type="text/javascript">
+        $().ready(function(){
+            ${selectHost}
+        });
+        function addMasterAddress(host,name){
+            var selectObj = document.getElementById("mAddr");
+            var newOption = new Option(host+" " + name, host);
+            selectObj.options.add(newOption);
+        }
+    </script>
 </head>
 <body>
 <div id="header">
@@ -49,17 +60,14 @@
                         <div class="form">
                             <p>
                                 <label>Master <span>(Required Field)</span></label>
-                                <input type="text" class="field size1" />
+                                <select class="field" id="mAddr" name="master"></select>
                             </p>
-
                             <p>
                                 <label>SPARQL Query <span>(Required Field)</span></label>
                                 <textarea class="field size1" rows="10" cols="30" name="request">${queryString}</textarea>
                             </p>
-
                         </div>
                         <!-- End Form -->
-
                         <!-- Form Buttons -->
                         <div class="buttons">
                             <input type="submit" class="button" value="submit" />
@@ -93,6 +101,9 @@
             session.removeAttribute("errorCode");
         } else if (session.getAttribute("errorCode").equals(ErrorCode.SOCKET_ERROR.getCode())) {
             response.getWriter().write("<script> alert(\"Can not connect to the Triad Master!\")</script>");
+            session.removeAttribute("errorCode");
+        } else if (session.getAttribute("errorCode").equals(ErrorCode.SHUTTING_DOWN.getCode())) {
+            response.getWriter().write("<script> alert(\"The Master selected is shutting down!\")</script>");
             session.removeAttribute("errorCode");
         }
     }

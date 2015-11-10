@@ -22,15 +22,22 @@ public class QueryServiceImpl implements QueryService {
     public ErrorCode executeQuery(Query query) {
         if(query==null || StringUtils.isEmpty(query.getRequest()))
             return ErrorCode.EMPTY_QUERY;
+        Socket client = null;
         try {
-            //for debugging
-            query.setMaster("192.168.7.3");
-            query.setPort(1919);
+            StringBuffer establishSb = new StringBuffer();
+            establishSb.append("[QUERY_SERVICE] MASTER ").append(query.getMaster()).append(" PORT ").append(query.getPort());
+            logger.debug(establishSb.toString());
 
-            Socket client = new Socket(query.getMaster(), query.getPort());
+            //for testing
+            client = new Socket(query.getMaster(), query.getPort());
             //sending query request
             Writer writer = new OutputStreamWriter(client.getOutputStream());
-            writer.write(query.getRequest().length()+"",0,32);
+            String size = query.getRequest().length()+"";
+            for(int i=0;i<32-(query.getRequest().length()+"").length();i++){
+                size +=" ";
+            }
+            writer.write(size,0,32);
+            writer.flush();
             int off = 0;
             int maxSize = query.getRequest().length();
             while(off<maxSize){
@@ -42,8 +49,11 @@ public class QueryServiceImpl implements QueryService {
                     len = maxSize - off;
                 writer.write(query.getRequest(),off,len);
                 off+=len;
+                writer.flush();
             }
-
+            writer.close();
+            if(query.getRequest().equals("quit"))
+                return ErrorCode.SHUTTING_DOWN;
             //receiving result
             Reader reader = new InputStreamReader(client.getInputStream());
             char result[] = new char[1024];
@@ -52,6 +62,7 @@ public class QueryServiceImpl implements QueryService {
             while((len=reader.read(result,0,1024))!=-1){
                 sb.append(result,0,len);
             }
+            reader.close();
             String response = sb.toString();
             logger.debug("[QUERY_SERVICE] result: \n"+ response);
             query.setResponse(response);
@@ -59,6 +70,14 @@ public class QueryServiceImpl implements QueryService {
         catch (IOException e){
             logger.error("[QUERY_SERVICE] socket IO exception",e);
             return ErrorCode.SOCKET_ERROR;
+        }
+        finally {
+            try {
+                client.close();
+            }
+            catch (Exception e){
+                logger.error("[QUERY_SERVICE] ",e);
+            }
         }
         return ErrorCode.SUCCESS;
     }

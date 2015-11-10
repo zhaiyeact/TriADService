@@ -58,6 +58,17 @@ public class RegisterServiceImpl implements RegisterService {
         return serverList;
     }
 
+    @Override
+    public List<ClusterServer> getMasterList() {
+        List<ClusterServer> masterList= new ArrayList<ClusterServer>();
+        for(ClusterServer server:serverList){
+            if(server.getRole().equals(ClusterServer.MASTER)&&server.getRegState().getMessage().equals(RegState.RUN.getMessage())){
+                masterList.add(server);
+            }
+        }
+        return masterList;
+    }
+
 
     private RegisterServiceImpl(){}
 
@@ -94,9 +105,11 @@ public class RegisterServiceImpl implements RegisterService {
         Runnable serverThread = new Runnable() {
             @Override
             public void run() {
+                ServerSocket serverSocket = null;
                 try {
                     ExecutorService executor = Executors.newFixedThreadPool(20);
                     logger.info("[REGISTER_SERVICE] start register server!");
+                    serverSocket = new ServerSocket(webPort);
                     while (true)
                     {
                         if(instance==null) {
@@ -106,10 +119,9 @@ public class RegisterServiceImpl implements RegisterService {
                                 }
                             }
                         }
-                        socket = new ServerSocket(webPort).accept();
+                        socket = serverSocket.accept();
                         executor.execute(new WorkerThread(socket));
                     }
-
                 }
                 catch (IOException e){
                     logger.error("[REGISTER_SERVICE] IOException ",e);
@@ -117,6 +129,7 @@ public class RegisterServiceImpl implements RegisterService {
                 finally {
                     try {
                         socket.close();
+                        serverSocket.close();
                     }
                     catch (IOException e){
 
@@ -141,9 +154,10 @@ public class RegisterServiceImpl implements RegisterService {
         server.setAddr(host);
         server.setName(hostName);
         server.setRegState(regState);
+        server.setRole(role);
         Boolean contains = false;
         for(ClusterServer clusterServer:serverList){
-            if(clusterServer.getAddr().equals(host) && clusterServer.getRole().equals(role) && clusterServer.getPort().equals(port)){
+            if(clusterServer.getAddr().equals(host) && clusterServer.getPort().equals(port)){
                 clusterServer.setRegState(regState);
                 contains = true;
             }
@@ -173,6 +187,9 @@ public class RegisterServiceImpl implements RegisterService {
         else if(role.toLowerCase().equals(ClusterServer.SLAVE.toLowerCase())){
             return ClusterServer.SLAVE;
         }
+        else if(role.toLowerCase().equals("null")){
+            return "NULL";
+        }
         else{
             throw new Exception(role+" is undefined!");
         }
@@ -189,7 +206,7 @@ public class RegisterServiceImpl implements RegisterService {
         @Override
         public void run() {
             try {
-                logger.info("[REGISTER_SERVICE] socket connection established");
+                logger.debug("[REGISTER_SERVICE] socket connection established");
                 Reader reader = new InputStreamReader(client.getInputStream());
                 char result[] = new char[1024];
                 StringBuilder sb = new StringBuilder();
@@ -198,6 +215,7 @@ public class RegisterServiceImpl implements RegisterService {
                     sb.append(result, 0, len);
                 }
                 String msg = sb.toString();
+                logger.debug("[REGISTER_SERVICE] message received: " + msg);
                 if(msg.equals("stop")){
                     synchronized (RegisterServiceImpl.class){
                         instance = null;
@@ -220,6 +238,14 @@ public class RegisterServiceImpl implements RegisterService {
             }
             catch (Exception e){
                 logger.error("[REGISTER_SERVICE] An error occurred ",e);
+            }
+            finally {
+                try {
+                    client.close();
+                }
+                catch (Exception e){
+                    logger.error("[REGISTER_SERVICE] An error occurred ",e);
+                }
             }
         }
     }
