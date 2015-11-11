@@ -29,6 +29,11 @@ public class Query implements Serializable {
      */
     private Integer port;
 
+    /**
+     * The default LUBM Query
+     */
+    private String lubmQuery;
+
 
     public String getRequest() {
         return request;
@@ -60,5 +65,13 @@ public class Query implements Serializable {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public String getLubmQuery() {
+        return lubmQuery;
+    }
+
+    public void setLubmQuery(String lubmQuery) {
+        this.lubmQuery = lubmQuery;
     }
 }

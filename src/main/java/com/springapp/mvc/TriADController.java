@@ -7,15 +7,21 @@ import com.triad.service.RegisterService;
 import com.triad.tools.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 /**
@@ -35,7 +41,8 @@ public class TriADController {
     RegisterService registerService;
 
     @RequestMapping(value = "/query",method = RequestMethod.GET)
-    public ModelAndView QueryPage(ModelMap modelMap){
+    public ModelAndView QueryPage(ModelMap modelMap,HttpServletRequest request){
+        LoadLubmQuries(request);
         List<ClusterServer> masterList = registerService.getMasterList();
         String selectHost = SelectOptionsToView(masterList);
         modelMap.addAttribute("selectHost",selectHost);
@@ -101,5 +108,29 @@ public class TriADController {
             sb.append("\"").append(master.getName()).append("\");");
         }
         return sb.toString();
+    }
+
+    protected void LoadLubmQuries(HttpServletRequest request){
+        try {
+            String absPath = request.getSession().getServletContext().getRealPath("/");
+            for (int i = 0; i < 7; i++) {
+                Object query = request.getSession().getAttribute("Q"+(i+1));
+                if (query == null || query.toString().equals("")) {
+                    String path = absPath + "/Quries/Q" + (i+1);
+                    File file = new File(path);
+                    FileInputStream in = new FileInputStream(file);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    String line = null;
+                    String queryStr = "";
+                    while((line = reader.readLine())!=null){
+                        queryStr += line;
+                    }
+                    request.getSession().setAttribute("Q"+(i+1),queryStr);
+                }
+            }
+        }
+        catch (Exception e){
+            logger.error("[TRIAD_CONTROLLER] ",e);
+        }
     }
 }

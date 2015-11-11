@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.triad.tools.ErrorCode" %>
+<%@ page import="com.triad.tools.LUBMQueries" %>
 <%@ page session="true"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -23,6 +24,18 @@
             var selectObj = document.getElementById("mAddr");
             var newOption = new Option(host+" " + name, host);
             selectObj.options.add(newOption);
+        }
+        function lubmOnChange(){
+            var selectObj = document.getElementById("lubmSelect");
+            var option = selectObj.options[selectObj.selectedIndex].value;
+            $.ajax({
+                type:"post",
+                url:
+            });
+            var a = "<%=session.getAttribute("Q1")%>";
+            alert(a);
+            if(option != "None"){
+            }
         }
     </script>
 </head>
@@ -65,6 +78,19 @@
                             <p>
                                 <label>SPARQL Query <span>(Required Field)</span></label>
                                 <textarea class="field size1" rows="10" cols="30" name="request">${queryString}</textarea>
+                            </p>
+                            <p>
+                                <label>LUBM Query <span>(Optional)</span></label>
+                                <select class="field" id="lubmSelect" name="lubmQuery" onchange="lubmOnChange()">
+                                    <option value="None">None</option>
+                                    <option value="Q1">Q1</option>
+                                    <option value="Q2">Q2</option>
+                                    <option value="Q3">Q3</option>
+                                    <option value="Q4">Q4</option>
+                                    <option value="Q5">Q5</option>
+                                    <option value="Q6">Q6</option>
+                                    <option value="Q7">Q7</option>
+                                </select>
                             </p>
                         </div>
                         <!-- End Form -->
