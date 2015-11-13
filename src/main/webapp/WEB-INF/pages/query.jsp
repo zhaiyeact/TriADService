@@ -16,6 +16,7 @@
     <title>TriAD Query</title>
     <link href="css/style.css" rel="stylesheet"/>
     <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="js/jquery.json.min.js"></script>
     <script type="text/javascript">
         $().ready(function(){
             ${selectHost}
@@ -29,13 +30,18 @@
             var selectObj = document.getElementById("lubmSelect");
             var option = selectObj.options[selectObj.selectedIndex].value;
             $.ajax({
-                type:"post",
-                url:
+                type: "get",
+                dataType: "text",
+                url: "/TriadService/lubmQuery",
+                data:{option:option},
+                success: function(data){
+                    var textObj = document.getElementById("queryTextArea");
+                    textObj.value = data;
+                },
+                error: function(){
+                    alert("error");
+                }
             });
-            var a = "<%=session.getAttribute("Q1")%>";
-            alert(a);
-            if(option != "None"){
-            }
         }
     </script>
 </head>
@@ -77,7 +83,7 @@
                             </p>
                             <p>
                                 <label>SPARQL Query <span>(Required Field)</span></label>
-                                <textarea class="field size1" rows="10" cols="30" name="request">${queryString}</textarea>
+                                <textarea class="field size1" rows="10" cols="30" name="request" id="queryTextArea">${queryString}</textarea>
                             </p>
                             <p>
                                 <label>LUBM Query <span>(Optional)</span></label>
@@ -104,7 +110,7 @@
                     <div class="form">
                         <p>
                             <label>Result</label>
-                            <textarea class="field size1" rows="10" cols="30" name="queryResult" contenteditable="false"></textarea>
+                            <textarea class="field size1" rows="10" cols="30" name="queryResult" contenteditable="false">${queryResult}</textarea>
                         </p>
                     </div>
                 </div>
@@ -130,6 +136,9 @@
             session.removeAttribute("errorCode");
         } else if (session.getAttribute("errorCode").equals(ErrorCode.SHUTTING_DOWN.getCode())) {
             response.getWriter().write("<script> alert(\"The Master selected is shutting down!\")</script>");
+            session.removeAttribute("errorCode");
+        }else if (session.getAttribute("errorCode").equals(ErrorCode.NO_MASTER.getCode())) {
+            response.getWriter().write("<script> alert(\"No master selected!\")</script>");
             session.removeAttribute("errorCode");
         }
     }

@@ -28,7 +28,9 @@ public class QueryServiceImpl implements QueryService {
             establishSb.append("[QUERY_SERVICE] MASTER ").append(query.getMaster()).append(" PORT ").append(query.getPort());
             logger.debug(establishSb.toString());
 
-            //for testing
+            String masterNode = query.getMaster();
+            if(StringUtils.isEmpty(masterNode))
+                return ErrorCode.NO_MASTER;
             client = new Socket(query.getMaster(), query.getPort());
             //sending query request
             Writer writer = new OutputStreamWriter(client.getOutputStream());
@@ -51,7 +53,6 @@ public class QueryServiceImpl implements QueryService {
                 off+=len;
                 writer.flush();
             }
-            writer.close();
             if(query.getRequest().equals("quit"))
                 return ErrorCode.SHUTTING_DOWN;
             //receiving result
@@ -63,6 +64,7 @@ public class QueryServiceImpl implements QueryService {
                 sb.append(result,0,len);
             }
             reader.close();
+            writer.close();
             String response = sb.toString();
             logger.debug("[QUERY_SERVICE] result: \n"+ response);
             query.setResponse(response);

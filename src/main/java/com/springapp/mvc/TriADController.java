@@ -7,13 +7,9 @@ import com.triad.service.RegisterService;
 import com.triad.tools.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
@@ -53,7 +49,7 @@ public class TriADController {
     public ModelAndView QueryResult(@ModelAttribute("query")Query query,ModelMap modelMap,HttpServletRequest request){
         List<ClusterServer> masterList = registerService.getMasterList();
         String selectHost = SelectOptionsToView(masterList);
-        modelMap.addAttribute("selectHost",selectHost);
+        modelMap.addAttribute("selectHost", selectHost);
         try {
             int port = MatchPort(query.getMaster());
             query.setPort(port);
@@ -66,7 +62,8 @@ public class TriADController {
         modelMap.addAttribute("queryString",query.getRequest());
         if(errorCode.getCode() == ErrorCode.SUCCESS.getCode()){
             //present query result when successfully execute the query
-            modelMap.addAttribute("queryResult",query.getResponse());
+            String result = query.getResponse();
+            modelMap.addAttribute("queryResult",result);
         }
         return new ModelAndView("query",modelMap);
     }
@@ -76,6 +73,21 @@ public class TriADController {
         List<ClusterServer> serverList = registerService.getServerList();
         modelMap.addAttribute("mRecordData",RegisterToView(serverList));
         return new ModelAndView("home");
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/lubmQuery",method = RequestMethod.GET)
+    public String UseLUBMQuery(@RequestParam(required = false) String option,ModelMap modelMap,HttpServletRequest request){
+        try {
+            if (!option.equals("None")) {
+                String queryStr = request.getSession().getAttribute(option).toString();
+                return queryStr;
+            }
+        }
+        catch (Exception e){
+            logger.error("[TRIAD_CONTROLLER] ",e);
+        }
+        return "";
     }
 
     protected String RegisterToView(List<ClusterServer> serverList){
