@@ -5,6 +5,7 @@ import com.triad.dataobject.Query;
 import com.triad.service.QueryService;
 import com.triad.service.RegisterService;
 import com.triad.tools.ErrorCode;
+import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +44,8 @@ public class TriADController {
         List<ClusterServer> masterList = registerService.getMasterList();
         String selectHost = SelectOptionsToView(masterList);
         modelMap.addAttribute("selectHost",selectHost);
+        //mock data
+        //mockResult(modelMap);
         return new ModelAndView("query","query",new Query());
     }
 
@@ -63,7 +67,28 @@ public class TriADController {
         if(errorCode.getCode() == ErrorCode.SUCCESS.getCode()){
             //present query result when successfully execute the query
             String result = query.getResponse();
+            String[] resultArray = result.split("\n");
+            int length = resultArray.length;
+            int count = 1;
+            if(length%200 == 0)
+                count = length/200;
+            else
+                count = length/200+1;
+            JSONArray resultJson = new JSONArray();
+            for(int i=0;i<count;i++){
+                String newLine = "";
+                for(int j=0+i*200;j<(i+1)*200&j<length;j++){
+                    newLine+=resultArray[j]+"\n";
+                }
+                if(i==0&&count>200){
+                    result = newLine;
+                }
+                resultJson.add(i,newLine);
+            }
             modelMap.addAttribute("queryResult",result);
+            modelMap.addAttribute("resultJson",resultJson);
+            String pageStr = ResultPageToView(count);
+            modelMap.addAttribute("resultPage",pageStr);
         }
         return new ModelAndView("query",modelMap);
     }
@@ -103,6 +128,12 @@ public class TriADController {
         return sb.toString();
     }
 
+    protected String ResultPageToView(int count){
+        StringBuffer sb = new StringBuffer();
+        sb.append("setResultPage(\"").append(count).append("\");");
+        return sb.toString();
+    }
+
     protected int MatchPort(String host) throws Exception{
         List<ClusterServer> masterList = registerService.getMasterList();
         for(ClusterServer master:masterList){
@@ -120,6 +151,15 @@ public class TriADController {
             sb.append("\"").append(master.getName()).append("\");");
         }
         return sb.toString();
+    }
+
+    protected void mockResult(ModelMap modelMap){
+        JSONArray resultJson = new JSONArray();
+        for(int i=0;i<1000;i++){
+            resultJson.add(i,"abc");
+        }
+        modelMap.addAttribute("resultJson",resultJson);
+        modelMap.addAttribute("resultPage",ResultPageToView(50));
     }
 
     protected void LoadLubmQuries(HttpServletRequest request){

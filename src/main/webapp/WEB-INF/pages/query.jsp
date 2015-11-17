@@ -19,8 +19,12 @@
     <script type="text/javascript" src="js/jquery.json.min.js"></script>
     <script type="text/javascript">
         $().ready(function(){
-            ${selectHost}
+            ${selectHost};
+            ${resultPage};
         });
+        var resultArray = eval(${resultJson});
+        var currentPage = 0;
+        var LastPage = 0;
         function addMasterAddress(host,name){
             var selectObj = document.getElementById("mAddr");
             var newOption = new Option(host+" " + name, host);
@@ -43,6 +47,95 @@
                 }
             });
         }
+        function setResultPage(pageCount){
+            LastPage = pageCount-1;
+            if(parseInt(pageCount) == 0 ){
+                return;
+            }
+            var divObj = document.getElementById("resultDiv");
+            var div1 = document.createElement("div");
+            div1.className = "pagging";
+            var leftDiv = document.createElement("div");
+            leftDiv.className = "left";
+            leftDiv.innerText = "Showing 1-5 of " + pageCount;
+
+            var newDiv = document.createElement("div");
+            newDiv.id = "resultBtnDiv";
+            newDiv.className = "right";
+            var pre = document.createElement("a");
+            pre.onclick = function(){
+                preBtnOnclick();
+            }
+            pre.innerText = "Previous";
+            newDiv.appendChild(pre);
+            if(parseInt(pageCount)<=5) {
+                for (var i = 0; i < parseInt(pageCount); i++) {
+                    var a = document.createElement("a");
+                    a.paramI = i;
+                    a.onclick = function(){
+                        resultPageOnclick(this.paramI);
+                    }
+                    a.innerText = (i+1).toString();
+                    newDiv.appendChild(a);
+                }
+            }
+            else{
+                for(var i = 0;i<2;i++) {
+                    var a = document.createElement("a");
+                    a.paramI = i;
+                    a.onclick = function() {
+                        resultPageOnclick(this.paramI);
+                    }
+                    a.innerText = (i+1).toString();
+                    newDiv.appendChild(a);
+                }
+                var span =document.createElement("span");
+                span.innerText = "...";
+                newDiv.appendChild(span);
+            }
+            var next = document.createElement("a");
+            next.onclick = function(){
+                nextBtnOnclick();
+            }
+            next.innerText = "Next";
+            newDiv.appendChild(next);
+
+            var last = document.createElement("a");
+            last.onclick = function(){
+                resultPageOnclick(LastPage);
+            }
+            last.innerText = "Last";
+            newDiv.appendChild(last);
+            div1.appendChild(leftDiv);
+            div1.appendChild(newDiv);
+            divObj.appendChild(div1);
+        }
+        function resultPageOnclick(page){
+            currentPage = page;
+            var result = document.getElementById("resultTextArea");
+            result.value = resultArray[page];
+        }
+        function preBtnOnclick(){
+            if(currentPage == 0){
+                return;
+            }
+            else{
+                currentPage-=1;
+                var result = document.getElementById("resultTextArea");
+                result.value = resultArray[currentPage];
+            }
+        }
+        function nextBtnOnclick(){
+            if(currentPage == LastPage){
+                return;
+            }
+            else{
+                currentPage+=1;
+                var result = document.getElementById("resultTextArea");
+                result.value = resultArray[currentPage];
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -107,10 +200,10 @@
                         <!-- End Form Buttons -->
                     </form:form>
                     <!-- Result div-->
-                    <div class="form">
+                    <div class="form" id="resultDiv">
                         <p>
                             <label>Result</label>
-                            <textarea class="field size1" rows="10" cols="30" name="queryResult" contenteditable="false">${queryResult}</textarea>
+                            <textarea class="field size1" rows="10" cols="30" name="queryResult" contenteditable="false" id="resultTextArea">${queryResult}</textarea>
                         </p>
                     </div>
                 </div>
@@ -132,7 +225,7 @@
             response.getWriter().write("<script> alert(\"Query can not be null!\")</script>");
             session.removeAttribute("errorCode");
         } else if (session.getAttribute("errorCode").equals(ErrorCode.SOCKET_ERROR.getCode())) {
-            response.getWriter().write("<script> alert(\"Can not connect to the Triad Master!\")</script>");
+            response.getWriter().write("<script> alert(\"Can not connect to Triad Master!\")</script>");
             session.removeAttribute("errorCode");
         } else if (session.getAttribute("errorCode").equals(ErrorCode.SHUTTING_DOWN.getCode())) {
             response.getWriter().write("<script> alert(\"The Master selected is shutting down!\")</script>");

@@ -10,6 +10,7 @@
     <properties>
         <spring.version>4.1.1.RELEASE</spring.version>
         <slf4j.version>1.7.5</slf4j.version>
+        <json-lib.version>2.2.3</json-lib.version>
     </properties>
 
     <dependencies>
@@ -71,6 +72,13 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>${json-lib.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

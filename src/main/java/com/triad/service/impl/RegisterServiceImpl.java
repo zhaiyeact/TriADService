@@ -122,17 +122,18 @@ public class RegisterServiceImpl implements RegisterService {
                         socket = serverSocket.accept();
                         executor.execute(new WorkerThread(socket));
                     }
+                    executor.shutdownNow();
                 }
                 catch (IOException e){
                     logger.error("[REGISTER_SERVICE] IOException ",e);
                 }
                 finally {
                     try {
-                        socket.close();
                         serverSocket.close();
+                        logger.debug("[REGISTER_SERVICE] socket server closed");
                     }
-                    catch (IOException e){
-
+                    catch (Exception e){
+                        logger.error("[REGISTER_SERVICE] Exception ",e);
                     }
                 }
             }
@@ -144,6 +145,14 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Override
     public RegState stop() {
+        logger.debug("[REGISTER_SERVICE] stopping register server");
+        instance = null;
+        try {
+            Socket socket = new Socket(webHost, webPort);
+        }
+        catch (Exception e){
+            logger.error("[REGISTER_SERVICE] Exception ",e);
+        }
         return null;
     }
 
@@ -199,6 +208,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         private Socket client;
 
+
         WorkerThread(final Socket client){
             this.client = client;
         }
@@ -206,6 +216,13 @@ public class RegisterServiceImpl implements RegisterService {
         @Override
         public void run() {
             try {
+                if(instance==null) {
+                    synchronized (RegisterServiceImpl.class) {
+                        if (instance == null) {
+                            return;
+                        }
+                    }
+                }
                 logger.debug("[REGISTER_SERVICE] socket connection established");
                 Reader reader = new InputStreamReader(client.getInputStream());
                 char result[] = new char[1024];
@@ -232,6 +249,7 @@ public class RegisterServiceImpl implements RegisterService {
                     String role = opts[4];
                     register(address,name,Integer.parseInt(port),matchState(operation),matchRole(role));
                 }
+                reader.close();
             }
             catch (IOException e){
                 logger.error("[REGISTER_SERVICE] IOException ",e);
@@ -242,6 +260,7 @@ public class RegisterServiceImpl implements RegisterService {
             finally {
                 try {
                     client.close();
+                    logger.debug("[REGISTER_SERVICE] client socket closed");
                 }
                 catch (Exception e){
                     logger.error("[REGISTER_SERVICE] An error occurred ",e);

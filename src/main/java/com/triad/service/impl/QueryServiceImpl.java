@@ -66,7 +66,6 @@ public class QueryServiceImpl implements QueryService {
             reader.close();
             writer.close();
             String response = sb.toString();
-            logger.debug("[QUERY_SERVICE] result: \n"+ response);
             query.setResponse(response);
         }
         catch (IOException e){
