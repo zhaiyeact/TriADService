@@ -166,8 +166,16 @@
                     <div class="box-head">
                         <h2 class="left">Query Execution</h2>
                     </div>
+                    <div class="form">
+                        <p>
+                            <label>Local Query <span>(Optional)</span></label>
+                            <form action="/TriadService/uploadQuery" method="post" enctype="multipart/form-data">
+                                <input type="file" name="file"/>
+                                <input type="submit" class="button" value="upload"/>
+                            </form>
+                        </p>
+                    </div>
                     <form:form action="/TriadService/queryexecute" method="post" commandName="query">
-
                         <!-- Form -->
                         <div class="form">
                             <p>

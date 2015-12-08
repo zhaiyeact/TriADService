@@ -39,14 +39,14 @@ public class TriADController {
     RegisterService registerService;
 
     @RequestMapping(value = "/query",method = RequestMethod.GET)
-    public ModelAndView QueryPage(ModelMap modelMap,HttpServletRequest request){
+    public ModelAndView QueryPage(@ModelAttribute("query") Query query,ModelMap modelMap,HttpServletRequest request){
         LoadLubmQuries(request);
         List<ClusterServer> masterList = registerService.getMasterList();
         String selectHost = SelectOptionsToView(masterList);
         modelMap.addAttribute("selectHost",selectHost);
         //mock data
         //mockResult(modelMap);
-        return new ModelAndView("query","query",new Query());
+        return new ModelAndView("query", "query", new Query());
     }
 
     @RequestMapping(value="/queryexecute",method = RequestMethod.POST)
