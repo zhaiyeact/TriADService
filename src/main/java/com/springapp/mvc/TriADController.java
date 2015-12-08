@@ -11,15 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -113,6 +111,32 @@ public class TriADController {
             logger.error("[TRIAD_CONTROLLER] ",e);
         }
         return "";
+    }
+
+    @RequestMapping(value="/uploadQuery",method = RequestMethod.POST)
+    public ModelAndView UploadQuery(@RequestParam("file") CommonsMultipartFile file,HttpServletRequest request,ModelMap modelMap){
+        try {
+            if (!file.isEmpty()) {
+                List<ClusterServer> masterList = registerService.getMasterList();
+                String selectHost = SelectOptionsToView(masterList);
+                modelMap.addAttribute("selectHost", selectHost);
+                InputStream in = file.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line = null;
+                String queryStr = "";
+                while((line = reader.readLine())!=null){
+                    queryStr += line;
+                }
+                Query query = new Query();
+                query.setRequest(queryStr);
+                modelMap.addAttribute("queryString",queryStr);
+                return new ModelAndView("query");
+            }
+        }
+        catch (Exception e){
+            logger.error("[UPLOADCONTROLLER] Exception ",e);
+        }
+        return new ModelAndView("query");
     }
 
     protected String RegisterToView(List<ClusterServer> serverList){
