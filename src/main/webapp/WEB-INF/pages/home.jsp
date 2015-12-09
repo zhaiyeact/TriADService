@@ -76,11 +76,6 @@
           <!-- Box Head -->
           <div class="box-head">
             <h2 class="left">Running Cluster</h2>
-            <div class="right">
-              <label>search machines</label>
-              <input type="text" class="field small-field" />
-              <input type="submit" class="button" value="search"/>
-            </div>
           </div>
           <!-- End Box Head -->
 
@@ -94,21 +89,6 @@
                 <th>Identity</th>
               </tr>
             </table>
-
-
-            <!-- Pagging -->
-            <div class="pagging">
-              <div class="left">Showing 1-12 of 44</div>
-              <div class="right">
-                <a href="#">Previous</a>
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <span>...</span>
-                <a href="#">Next</a>
-                <a href="#">View all</a>
-              </div>
-            </div>
-            <!-- End Pagging -->
 
           </div>
           <!-- Table -->
